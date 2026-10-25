@@ -68,7 +68,7 @@ export function mountLocalSeoChecker(root, options = {}) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const url = field('url').value.trim();
-    if (!url) { showError('Enter the address of the page you want to check.'); return; }
+    if (!url) { showError('Enter the address of the page you want to check.', 'empty-url'); return; }
     showError('');
     loading.hidden = false;
     submit.disabled = true;
@@ -81,7 +81,7 @@ export function mountLocalSeoChecker(root, options = {}) {
       });
       const data = await res.json().catch(() => null);
       if (!data || !data.ok) {
-        showError(data?.error?.message || `The checker couldn't complete (HTTP ${res.status}). Please try again.`);
+        showError(data?.error?.message || `The checker couldn't complete (HTTP ${res.status}). Please try again.`, data?.error?.code || `http-${res.status}`);
         return;
       }
       render(data.result);
@@ -89,7 +89,7 @@ export function mountLocalSeoChecker(root, options = {}) {
       results.scrollIntoView({ behavior: 'smooth', block: 'start' });
       root.dispatchEvent(new CustomEvent('lsc:checked', { bubbles: true, detail: { score: data.result.score } }));
     } catch {
-      showError('We couldn\'t reach the checker. Check your connection and try again.');
+      showError('We couldn\'t reach the checker. Check your connection and try again.', 'network');
     } finally {
       loading.hidden = true;
       submit.disabled = false;
@@ -107,9 +107,11 @@ export function mountLocalSeoChecker(root, options = {}) {
     form.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 
-  function showError(msg) {
+  function showError(msg, code) {
     error.textContent = msg;
     error.hidden = !msg;
+    // Lets a host page count errors (e.g. rate limits) in its analytics.
+    if (msg && code) root.dispatchEvent(new CustomEvent('lsc:error', { bubbles: true, detail: { code } }));
   }
 
   function render(r) {
