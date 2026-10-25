@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Local SEO Checker</title>
+  <link rel="stylesheet" href="/src/ui/style.css" />
+  <style>
+    body { margin: 0; padding: 32px 16px; background: #eef1f5; font-family: system-ui, sans-serif; }
+    main { max-width: 900px; margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: 28px; }
+    p.lead { margin: 0 0 24px; color: #5b6474; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Local SEO Checker</h1>
+    <p class="lead">Enter a business page to get a local SEO score and a fix list. Run with <code>npm run dev</code>.</p>
+    <div id="tool"></div>
+  </main>
+  <script type="module">
+    import { mountLocalSeoChecker } from '/src/ui/tool.js';
+    mountLocalSeoChecker(document.getElementById('tool'), { apiUrl: '/check' });
+  </script>
+</body>
+</html>

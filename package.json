@@ -1,0 +1,40 @@
+{
+  "name": "local-seo-checker",
+  "version": "0.1.0",
+  "description": "Free local SEO checker: scores a business web page 0-100 on ~30 local SEO checks with a plain-English fix list. Small self-hostable Node service + browser UI.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./src/analyze/index.js",
+  "exports": {
+    ".": "./src/analyze/index.js",
+    "./ui": "./src/ui/tool.js",
+    "./ui/style.css": "./src/ui/style.css",
+    "./score": "./src/score.js"
+  },
+  "files": [
+    "src",
+    "server"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js --demo",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "node-html-parser": "^6.1.13"
+  },
+  "keywords": [
+    "local-seo",
+    "seo-audit",
+    "seo-checker",
+    "google-business-profile",
+    "nap"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mrgcode35/local-seo-checker.git"
+  }
+}
