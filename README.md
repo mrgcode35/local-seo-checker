@@ -37,7 +37,8 @@ docker run --rm -p 127.0.0.1:8787:8787 local-seo-checker
 
 API: `POST /check` with JSON `{ "url": "example.com", "name": "", "city": "", "service": "" }` →
 `{ ok: true, result: { score, grade, categories, checks[] } }`. `GET /health` → `ok`.
-Settings are environment variables — see [`.env.example`](.env.example).
+Settings are environment variables — see [`.env.example`](.env.example). Set `CORS_ORIGIN` if a
+site on another origin calls the API directly from the browser.
 
 ## Safety
 

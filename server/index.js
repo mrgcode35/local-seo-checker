@@ -18,6 +18,8 @@ const PORT = Number(env.PORT || 8787);
 const HOST = env.HOST || '0.0.0.0';
 const TRUST_PROXY = env.TRUST_PROXY === '1';
 const DEMO = env.DEMO === '1' || process.argv.includes('--demo');
+// Optional: let one other origin call the API from the browser (e.g. a local dev site).
+const CORS_ORIGIN = env.CORS_ORIGIN || '';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const limiter = new RateLimiter({ perHour: Number(env.RATE_PER_HOUR || 10), perDay: Number(env.RATE_PER_DAY || 30) });
@@ -33,9 +35,14 @@ function clientIp(req) {
   return req.socket.remoteAddress || 'unknown';
 }
 
+function corsHeaders() {
+  return CORS_ORIGIN ? { 'Access-Control-Allow-Origin': CORS_ORIGIN, Vary: 'Origin' } : {};
+}
+
 function send(res, status, body, headers = {}) {
   const json = JSON.stringify(body);
   res.writeHead(status, {
+    ...corsHeaders(),
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff',
@@ -159,6 +166,11 @@ const DEMO_FILES = {
 
 const server = http.createServer(async (req, res) => {
   const { pathname } = new URL(req.url, 'http://x');
+  if (req.method === 'OPTIONS' && pathname === '/check' && CORS_ORIGIN) {
+    res.writeHead(204, { ...corsHeaders(), 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '600' });
+    res.end();
+    return;
+  }
   if (req.method === 'POST' && pathname === '/check') return handleCheck(req, res);
   if (req.method === 'GET' && pathname === '/health') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('ok'); return; }
   if (DEMO && req.method === 'GET' && DEMO_FILES[pathname]) {
